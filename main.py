@@ -2,10 +2,11 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-TABLE_NAME = "test_table"
+# Table name
+TABLE_NAME = "transactions"
 
 # Database connection
-connection = st.connection('mysql', type='sql')
+connection = st.connection('postgresql', type='sql')
 
 # App title
 st.title("Search Transactions")
