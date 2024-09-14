@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-TABLE_NAME = "donate_transactions"
+TABLE_NAME = "test_table"
 
 # Database connection
 connection = st.connection('mysql', type='sql')
