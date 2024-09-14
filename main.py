@@ -1,13 +1,11 @@
 import streamlit as st
-import pymysql
 import pandas as pd
 import plotly.express as px
 
 TABLE_NAME = "donate_transactions"
 
 # Database connection
-connection = pymysql.connect(**st.secrets.db_credentials)
-cursor = connection.cursor()
+connection = st.connection('mysql', type='sql')
 
 # App title
 st.title("Search Transactions")
@@ -22,31 +20,23 @@ with tab1:
 
     # Query and display results only if there is input
     if search_text:
-        query = f"SELECT * FROM {TABLE_NAME} WHERE content LIKE %s"
-        cursor.execute(query, (f"%{search_text}%",))  # Use SQL parameterized queries to prevent SQL injection
-        results = cursor.fetchall()
+        query = f"SELECT * FROM {TABLE_NAME} WHERE content LIKE '%{search_text}%'"
+        # Use parameterized query to avoid SQL injection
+        df = connection.query(query)
 
         # Check if any results are found
-        if results:
-            # Convert results into a pandas DataFrame
-            df = pd.DataFrame(results, columns=["transaction_date", "credit", "content", "transaction_code"])
-            
+        if not df.empty:
             # Display matching transactions
-            st.write(f"Found {len(results)} matching transactions:")
+            st.write(f"Found {len(df)} matching transactions:")
             st.dataframe(df)
         else:
             st.write("No transactions found matching your search.")
-
 
 with tab2:
     st.subheader("Credit Chart")
 
     query = f"SELECT credit FROM {TABLE_NAME}"
-    cursor.execute(query)
-    chart_data = cursor.fetchall()
-
-    # Convert chart data into a pandas DataFrame
-    df_chart = pd.DataFrame(chart_data, columns=["credit"])
+    df_chart = connection.query(query)
 
     # Define the bins and labels for credit amounts
     bins = [0, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000, 500000000, 1000000000]
@@ -63,6 +53,6 @@ with tab2:
 
     # Plot the distribution
     fig = px.bar(df_distribution, x='Credit Range', y='Count', title="Distribution of Credit Amounts",
-                labels={"Credit Range": "Amount", "Count": "Number of Transactions"})
+                 labels={"Credit Range": "Amount", "Count": "Number of Transactions"})
 
     st.plotly_chart(fig)
