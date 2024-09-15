@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# Page config
+st.set_page_config(page_title="Var-SaoKe", page_icon='🔍')
+
 # Table name
 TABLE_NAME = "transactions"
 
