@@ -9,15 +9,17 @@ TABLE_NAME = "transactions"
 connection = st.connection('postgresql', type='sql')
 
 # App title
-st.title("Search Transactions")
+st.title("🫡Sao Kê Giao Dịch MTTQVN")
+st.write("🪴Ủng hộ đồng bào Miền Bắc khắc phục hậu quả gây ra bởi bão Yagi")
+st.write("📑Dữ liệu được cung cấp bởi MTTQVN (từ 1/9/2024 đến 10/9/2024)")
 
-tab1, tab2 = st.tabs(["Search Transactions", "Credit Chart"])
+tab1, tab2 = st.tabs(["Tra cứu GD", "Biểu đồ"])
 
 with tab1:
-    st.subheader("Search Transactions by Content")
+    st.subheader("Tra Cứu Giao Dịch")
 
     # User input
-    search_text = st.text_input("Enter text to search in transactions:")
+    search_text = st.text_input("Nhập mã giao dịch, người giao dịch, hoặc nội dung bất kỳ:")
 
     # Query and display results only if there is input
     if search_text:
@@ -28,13 +30,15 @@ with tab1:
         # Check if any results are found
         if not df.empty:
             # Display matching transactions
-            st.write(f"Found {len(df)} matching transactions:")
+            st.success(f"Tìm thấy {len(df)} giao dịch trùng khớp:")
             st.dataframe(df)
         else:
-            st.write("No transactions found matching your search.")
+            st.warning("Không tìm thấy kết quả")
+    
+    st.warning("DISCLAIM: Page được build với mục đích học tập, không nhằm mục đích gây kích động, bạo lực, chính trị, hay bất kỳ mục đích nào khác")
 
 with tab2:
-    st.subheader("Credit Chart")
+    st.subheader("Distribution Chart")
 
     query = f"SELECT credit FROM {TABLE_NAME}"
     df_chart = connection.query(query)
@@ -53,7 +57,7 @@ with tab2:
     df_distribution = pd.DataFrame({'Credit Range': credit_distribution.index, 'Count': credit_distribution.values})
 
     # Plot the distribution
-    fig = px.bar(df_distribution, x='Credit Range', y='Count', title="Distribution of Credit Amounts",
-                 labels={"Credit Range": "Amount", "Count": "Number of Transactions"})
+    fig = px.bar(df_distribution, x='Credit Range', y='Count', title="Biểu đồ phân bố số tiền ủng hộ từ các nhà hảo tâm!",
+                 labels={"Credit Range": "Số tiền", "Count": "Số lượng GD"})
 
     st.plotly_chart(fig)
